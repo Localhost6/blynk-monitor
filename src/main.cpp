@@ -113,7 +113,7 @@ void setup()
   filesystem_begin();
   delay(1000);
   
-  pinMode(Rainsensor, INPUT);
+  pinMode(Rainsensor, INPUT_PULLUP);
   digitalWrite(Rainsensor, HIGH);
   // Blynk.begin(auth, ssid, pass, server, 8080);
 
