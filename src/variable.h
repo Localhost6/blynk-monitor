@@ -16,7 +16,7 @@
 #define path_data "/data.json"
 #include "OneButton.h"
 
-const byte Rainsensor = 34;
+const byte Rainsensor = 4;
 const byte ButtonSelenoid = 23;
 const byte TemperatureSensor = 32;
 const byte Selenoid_1 = 16;
@@ -49,7 +49,7 @@ unsigned int flowmlt;
 unsigned long oldTime;
 
 const char *auth = "zMSLWSMCtkgZxiWZ3xWSeQN7j3Ouxr2t";
-// const char *ssid = "arduino32";
+const char *ssid = "arduino32";
 const char *pass = "";
 char server[] = "iot.serangkota.go.id";
 

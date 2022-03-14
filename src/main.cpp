@@ -4,20 +4,21 @@
 void Task_One(void *pvParameters)
 {
   Serial.println("");
-  // sensorTemp.begin();
-  // cekFile_dataAkumulasi();
-  // cekFile_dataTotal();
-  // initialize();
+  sensorTemp.begin();
+  cekFile_dataAkumulasi();
+  cekFile_dataTotal();
+  initialize();
   // Blynk.begin(auth, ssid, pass);
   setSyncInterval(10 * 60);
-  // timer.setInterval(1000, BlynkFunction);
+  timer.setInterval(1000, BlynkFunction);
   Serial.println("");
   for (;;)
   {
-    // Blynk.run();
-    // timer.run();
+    Blynk.run();
+    timer.run();
+    eventKamarMandi();
     // rainTriger = digitalRead(Rainsensor);
-    Serial.println(digitalRead(Rainsensor));
+    // Serial.println(digitalRead(Rainsensor));
     digitalWrite(Selenoid_1, selenoid);
   }
 }
@@ -113,29 +114,29 @@ void setup()
   filesystem_begin();
   delay(1000);
   
-  pinMode(Rainsensor, INPUT);
-  digitalWrite(Rainsensor, HIGH);
-  // Blynk.begin(auth, ssid, pass, server, 8080);
+  // pinMode(Rainsensor, INPUT_PULLUP);
+  // digitalWrite(Rainsensor, HIGH);
+  Blynk.begin(auth, ssid, pass, server, 8080);
 
-  // xTaskCreatePinnedToCore(
-  //     Task_One,
-  //     "TaskBlynk",
-  //     7500,
-  //     NULL,
-  //     3,
-  //     &Task1,
-  //     1);
+  xTaskCreatePinnedToCore(
+      Task_One,
+      "TaskBlynk",
+      7500,
+      NULL,
+      3,
+      &Task1,
+      1);
 
   delay(1000);
 
-  // xTaskCreatePinnedToCore(
-  //     Task_Two,
-  //     "Flow Sensor",
-  //     7500,
-  //     NULL,
-  //     2,
-  //     &Task2,
-  //     0);
+  xTaskCreatePinnedToCore(
+      Task_Two,
+      "Flow Sensor",
+      7500,
+      NULL,
+      2,
+      &Task2,
+      0);
 
   Serial.println();
 }
@@ -144,5 +145,5 @@ void loop()
 {
   // if(!Blynk.connected()) 
   // Blynk.begin(auth, ssid, pass);
-  Serial.println(digitalRead(Rainsensor));
+  // Serial.println(digitalRead(Rainsensor));
 }

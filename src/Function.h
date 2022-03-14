@@ -50,7 +50,7 @@ void initialize()
   BakUtama.echo = 14;
   BakCadangan.trig = 25;
   BakCadangan.echo = 26;
-  // pinMode(Rainsensor, INPUT_PULLUP);
+  pinMode(Rainsensor, INPUT_PULLUP);
   pinMode(Selenoid_1, OUTPUT);
   seting_ultrasonic(BakMandi.trig, BakMandi.echo);
   seting_ultrasonic(BakUtama.trig, BakUtama.echo);
@@ -134,7 +134,6 @@ void BlynkFunction()
 {
   sensorTemp.requestTemperatures();
   suhu = sensorTemp.getTempCByIndex(0);
-  eventKamarMandi();
 
   if (selenoid)
   {
@@ -390,7 +389,7 @@ void mulai_record()
   if (millis() - tampilanMillis >= 1000)
   {
     tampilanMillis = millis();
-    Serial.printf("Level Bak: %d\nSelenoid: %d\nEmergency: %d\nSuhu: %d\nDebit: %d\nVolume: %d\nSensor Hujan: %d\n", BakMandi.levelBak, mulaiJam, emergencyStop, 24, flowmlt, pembaca.total, rainTriger);
+    Serial.printf("Level Bak: %d\nSelenoid: %d\nEmergency: %d\nSuhu: %02f\nDebit: %d\nVolume: %d\nSensor Hujan: %d\n", BakMandi.levelBak, mulaiJam, emergencyStop, suhu, flowmlt, int(pembaca.total), rainTriger);
     Serial.printf("Blynk Selenoid: %d\n", BlynkSelenoidState);
     Serial.printf("jam: %2d:%2d:%2d Tanggal: %d/%d/%d Hari: %s\n\n", hour(), minute(), second(), day(), month(), year(), Hari[weekday() - 1]);
     Serial.print("Debit air: ");
