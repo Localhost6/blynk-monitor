@@ -99,6 +99,20 @@ void Task_Two(void *pvParameters)
       pembaca.sabtu = 0;
       pembaca.total = 0;
       idIndex = 0;
+      String output;
+      StaticJsonDocument<120> doc;
+      doc["minggu"] = pembaca.minggu;
+      doc["senin"] = pembaca.senin;
+      doc["selasa"] = pembaca.selasa;
+      doc["rabu"] = pembaca.rabu;
+      doc["kamis"] = pembaca.kamis;
+      doc["jumat"] = pembaca.jumat;
+      doc["sabtu"] = pembaca.sabtu;
+      serializeJson(doc, output);
+      file = LITTLEFS.open("/akumulasi.json", FILE_WRITE);
+      file.print(output);
+      Serial.println(output);
+      file.close();
       RST = false;
     }
 
@@ -113,7 +127,7 @@ void setup()
   Serial.begin(115200);
   filesystem_begin();
   delay(1000);
-  
+
   // pinMode(Rainsensor, INPUT_PULLUP);
   // digitalWrite(Rainsensor, HIGH);
   Blynk.begin(auth, ssid, pass, server, 8080);
@@ -143,7 +157,7 @@ void setup()
 
 void loop()
 {
-  // if(!Blynk.connected()) 
+  // if(!Blynk.connected())
   // Blynk.begin(auth, ssid, pass);
   // Serial.println(digitalRead(Rainsensor));
 }
