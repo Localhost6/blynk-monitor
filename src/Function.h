@@ -59,22 +59,25 @@ void initialize()
 
 void konversi()
 {
-  BakMandi.minimal = 30; // dalam centimeter
-  BakMandi.maksimal = 2; // dalam centimeter
-  BakMandi.persenMinimal = 10;
-  BakMandi.persenMaksimal = 80;
+  BakMandi.minimal = 120; // dalam centimeter
+  BakMandi.maksimal = 20; // dalam centimeter
+  BakMandi.persenMinimal = 50;
+  BakMandi.persenMaksimal = 95;
+  BakMandi.lvlMentah = BakMandi.penghitung(BakMandi.trig, BakMandi.echo);
   BakMandi.levelBak = map(BakMandi.penghitung(BakMandi.trig, BakMandi.echo), BakMandi.minimal, BakMandi.maksimal, 0, 100); // konversi dari nilai minimal - nilai maksimal ke 0 - 100 memungkinkan untuk mengubah ke persentase
 
-  BakUtama.minimal = 30;  // dalam centimeter
-  BakUtama.maksimal = 2; // dalam centimeter
+  BakUtama.minimal = 70; // dalam centimeter
+  BakUtama.maksimal = 10; // dalam centimeter
   BakUtama.persenMinimal = 10;
   BakUtama.persenMaksimal = 80;
+  BakUtama.lvlMentah = BakUtama.penghitung(BakUtama.trig, BakUtama.echo);
   BakUtama.levelBak = map(BakUtama.penghitung(BakUtama.trig, BakUtama.echo), BakUtama.minimal, BakUtama.maksimal, 0, 100); // konversi dari nilai minimal - nilai maksimal ke 0 - 100 memungkinkan untuk mengubah ke persentase
 
-  BakCadangan.minimal = 30;  // dalam centimeter
+  BakCadangan.minimal = 30; // dalam centimeter
   BakCadangan.maksimal = 2; // dalam centimeter
   BakCadangan.persenMinimal = 10;
   BakCadangan.persenMaksimal = 80;
+  BakCadangan.lvlMentah = BakCadangan.penghitung(BakCadangan.trig, BakCadangan.echo);
   BakCadangan.levelBak = map(BakCadangan.penghitung(BakCadangan.trig, BakCadangan.echo), BakCadangan.minimal, BakCadangan.maksimal, 0, 100); // konversi dari nilai minimal - nilai maksimal ke 0 - 100 memungkinkan untuk mengubah ke persentase
 }
 
@@ -115,16 +118,16 @@ void eventKamarMandi()
 
     if (selenoid2 || BlynkSelenoidState)
     {
-      selenoid = true;
+      selenoid = false;
     }
     else if (!selenoid2)
     {
-      selenoid = !true;
+      selenoid = true;
     }
   }
   else
   {
-    selenoid = !true;
+    selenoid = true;
     Blynk.virtualWrite(V4, 0);
     BlynkSelenoidState = 0;
   }
@@ -132,16 +135,17 @@ void eventKamarMandi()
 
 void BlynkFunction()
 {
+  // eventKamarMandi();
   sensorTemp.requestTemperatures();
   suhu = sensorTemp.getTempCByIndex(0);
 
   if (selenoid)
   {
-    SelenoidLED.on();
+    SelenoidLED.off();
   }
   else
   {
-    SelenoidLED.off();
+    SelenoidLED.on();
   }
 
   if (!rainTriger)
@@ -159,6 +163,23 @@ void BlynkFunction()
   Blynk.virtualWrite(V3, pembaca.total / 1000.0);
   Blynk.virtualWrite(V7, debit);
   Blynk.virtualWrite(V8, suhu);
+
+  Serial.printf("Level Bak: %d\nSelenoid: %d\nEmergency: %d\nSuhu: %02f\nDebit: %d\nVolume: %d\nSensor Hujan: %d\n", BakMandi.levelBak, selenoid, emergencyStop, suhu, flowmlt, int(pembaca.total), rainTriger);
+  Serial.printf("Blynk Selenoid: %d\n", BlynkSelenoidState);
+  Serial.printf("jam: %2d:%2d:%2d Tanggal: %d/%d/%d Hari: %s\n", hour(), minute(), second(), day(), month(), year(), Hari[weekday() - 1]);
+  Serial.printf("Bak Utama: %dcm\nBak Mandi: %dcm\nBak Cadangan: %dcm\n", BakUtama.lvlMentah, BakMandi.lvlMentah, BakCadangan.lvlMentah);
+  Serial.print("Debit air: ");
+  Serial.print(int(debit));
+  Serial.println("L/min");
+
+  Serial.print("Volume: ");
+  Serial.print(pembaca.total);
+  Serial.println("mL");
+
+  Serial.print("1 minggu: ");
+  Serial.print(satuminggu.total);
+  Serial.println("mL");
+  Serial.println("");
 }
 
 void longClick()
@@ -177,10 +198,13 @@ void multiClick()
 {
   if (button.getNumberClicks() == 3)
   {
-    clickable ++;
-    if(clickable > 2) clickable = 0;
+    clickable++;
+    if (clickable > 2)
+      clickable = 0;
     myWaktu = millis();
-  }else if(button.getNumberClicks() == 10){
+  }
+  else if (button.getNumberClicks() == 10)
+  {
     RST = true;
   }
 }
@@ -386,25 +410,26 @@ void mulai_record()
     table_value = pembaca.sabtu;
   }
 
-  if (millis() - tampilanMillis >= 1000)
-  {
-    tampilanMillis = millis();
-    Serial.printf("Level Bak: %d\nSelenoid: %d\nEmergency: %d\nSuhu: %02f\nDebit: %d\nVolume: %d\nSensor Hujan: %d\n", BakMandi.levelBak, mulaiJam, emergencyStop, suhu, flowmlt, int(pembaca.total), rainTriger);
-    Serial.printf("Blynk Selenoid: %d\n", BlynkSelenoidState);
-    Serial.printf("jam: %2d:%2d:%2d Tanggal: %d/%d/%d Hari: %s\n\n", hour(), minute(), second(), day(), month(), year(), Hari[weekday() - 1]);
-    Serial.print("Debit air: ");
-    Serial.print(int(debit));
-    Serial.print("L/min");
-    Serial.print("\t");
+  // if (millis() - tampilanMillis >= 1000)
+  // {
+  //   tampilanMillis = millis();
+  //   Serial.printf("Level Bak: %d\nSelenoid: %d\nEmergency: %d\nSuhu: %02f\nDebit: %d\nVolume: %d\nSensor Hujan: %d\n", BakMandi.levelBak, mulaiJam, emergencyStop, suhu, flowmlt, int(pembaca.total), rainTriger);
+  //   Serial.printf("Blynk Selenoid: %d\n", BlynkSelenoidState);
+  //   Serial.printf("jam: %2d:%2d:%2d Tanggal: %d/%d/%d Hari: %s\n", hour(), minute(), second(), day(), month(), year(), Hari[weekday() - 1]);
+  //   Serial.printf("Bak Utama: %dcm\nBak Mandi: %dcm\nBak Cadangan: %dcm\n", BakUtama.penghitung(BakUtama.trig, BakUtama.echo), BakMandi.penghitung(BakMandi.trig, BakMandi.echo), BakCadangan.penghitung(BakCadangan.trig, BakCadangan.echo));
+  //   Serial.print("Debit air: ");
+  //   Serial.print(int(debit));
+  //   Serial.println("L/min");
 
-    Serial.print("Volume: ");
-    Serial.print(pembaca.total);
-    Serial.println("mL");
+  //   Serial.print("Volume: ");
+  //   Serial.print(pembaca.total);
+  //   Serial.println("mL");
 
-    Serial.print("1 minggu: ");
-    Serial.print(satuminggu.total);
-    Serial.println("mL");
-  }
+  //   Serial.print("1 minggu: ");
+  //   Serial.print(satuminggu.total);
+  //   Serial.println("mL");
+  //   Serial.println("");
+  // }
 
   if (hour() == 23 && minute() == 59 && second() == 59)
   {
@@ -487,9 +512,9 @@ void printDebit()
   if (millis() - waktu___ >= 1000)
   {
     lcd.clear();
-    lcd.setCursor(0,0);
+    lcd.setCursor(0, 0);
     lcd.printf("Debit: %dL/m", int(debit));
-    lcd.setCursor(0,1);
+    lcd.setCursor(0, 1);
     lcd.printf("Total: %dL", int(pembaca.total / 1000));
     waktu___ = millis();
   }

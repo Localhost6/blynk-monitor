@@ -81,6 +81,7 @@ public:
   int levelBak;
   int persenMinimal;
   int persenMaksimal;
+  int lvlMentah;
   byte echo;
   byte trig;
 
